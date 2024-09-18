@@ -36,6 +36,10 @@ dependencies:
 
   another_stepper: ^1.2.2
 
+  firebase_core: ^3.2.0
+  firebase_messaging: ^15.0.3
+  onesignal_flutter: ^3.2.6
+  overlay_support: ^2.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
