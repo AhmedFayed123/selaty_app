@@ -1,29 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:task1/features/onboarding/presentation/views/onboarding.dart';
+import 'package:get/get.dart';
 
-class SplashViewBody extends StatefulWidget {
-  const SplashViewBody({super.key});
+import '../../controller/splash_controller.dart';
 
-  @override
-  State<SplashViewBody> createState() => _SplashViewBodyState();
-}
+class SplashViewBody extends StatelessWidget {
+  SplashViewBody({super.key});
 
-class _SplashViewBodyState extends State<SplashViewBody> {
-  @override
-  void initState() {
-    super.initState();
-    navigateToHome();
-  }
-
-  void navigateToHome() {
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (BuildContext context) => OnBoarding(),
-        ),
-      );
-    });
-  }
+  // استخدمنا الـ SplashController مع Get.put
+  final SplashController controller = Get.put(SplashController());
 
   @override
   Widget build(BuildContext context) {

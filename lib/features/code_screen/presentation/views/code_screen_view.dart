@@ -30,7 +30,7 @@ class CodeScreenView extends StatelessWidget {
               )),
         ],
       ),
-      body: const CodeScreenBody(),
+      body: const OTPView(),
     );
   }
 }

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 import '../../../../../utils/custom button.dart';
-import '../../../../login/presentation/views/login.dart';
-import '../../../../register/presentation/views/register.dart';
+import '../../controller/welcome_controller.dart';
 
 class WelcomeScreenBody extends StatelessWidget {
-  const WelcomeScreenBody({super.key});
+  WelcomeScreenBody({super.key});
+
+  // هنا نقوم بربط الـ Controller مع الـ View
+  final WelcomeController controller = Get.put(WelcomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -56,10 +60,7 @@ class WelcomeScreenBody extends StatelessWidget {
             CustomButton(
               text: 'تسجيل الدخول',
               fun: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Login()),
-                );
+                controller.goToLogin();
               },
               color: const Color(0xffB91B2E),
             ),
@@ -69,10 +70,7 @@ class WelcomeScreenBody extends StatelessWidget {
             CustomButton(
               text: 'انشاء حساب',
               fun: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Register()),
-                );
+                controller.goToRegister();
               },
               color: const Color(0xff16B625),
             ),

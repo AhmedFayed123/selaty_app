@@ -1,107 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task1/features/login/presentation/views/login.dart';
-import 'package:task1/utils/custom%20container.dart';
-
 import '../../../../../utils/custom button.dart';
+import '../../../../../utils/custom container.dart';
 import '../../../../../utils/custom_text_form_field.dart';
+import '../../controller/register_controller.dart';
 
-class RegisterBody extends StatefulWidget {
+
+class RegisterBody extends StatelessWidget {
   const RegisterBody({super.key});
 
   @override
-  State<RegisterBody> createState() => _RegisterBodyState();
-}
-
-class _RegisterBodyState extends State<RegisterBody> {
-  final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController _nameController = TextEditingController();
-
-  final TextEditingController _emailController = TextEditingController();
-
-  final TextEditingController _passwordController = TextEditingController();
-
-  bool _obscurePassword = true;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  String? _validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'ادخل الاسم';
-    }
-    return null;
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'ادخل البريد الالكترونى';
-    }
-    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-    if (!emailRegex.hasMatch(value)) {
-      return 'ادخل البريد الالكترونى بشكل صحيح';
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'ادخل كلمة المرور';
-    }
-    if (value.length < 6) {
-      return 'يجب ان يحنوى الباسورد على 6 احرف';
-    }
-    return null;
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState?.validate() == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration Successful')),
-      );
-    }
-  }
-
-  void _togglePasswordVisibility() {
-    setState(() {
-      _obscurePassword = !_obscurePassword;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
+    final registerController = Get.put(RegisterController()); // Initialize the controller
+
     return Scaffold(
       appBar: AppBar(
         leading: Container(
-            margin: const EdgeInsets.all(4),
+          margin: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(),
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.archive_outlined),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(),
             ),
             child: IconButton(
-              icon: const Icon(
-                Icons.archive_outlined,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )),
-        actions: [
-          Container(
-              margin: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.add_a_photo_outlined),
-                onPressed: () {},
-              )),
+              icon: const Icon(Icons.add_a_photo_outlined),
+              onPressed: () {},
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -122,78 +62,66 @@ class _RegisterBodyState extends State<RegisterBody> {
                 'ادخل بياناتك لانشاء حساب',
                 style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
               ),
-              const SizedBox(
-                height: 40,
-              ),
+              const SizedBox(height: 40),
               Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   children: [
                     CustomTextFormField(
-                      controller: _nameController,
+                      controller: registerController.nameController,
                       labelText: 'الاسم',
-                      validator: _validateName,
+                      validator: registerController.validateName,
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 10),
                     CustomTextFormField(
-                      controller: _emailController,
+                      controller: registerController.emailController,
                       labelText: 'البريد الالكترونى',
-                      validator: _validateEmail,
+                      validator: registerController.validateEmail,
                       keyboardType: TextInputType.emailAddress,
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    CustomTextFormField(
-                      controller: _passwordController,
+                    const SizedBox(height: 10),
+                    Obx(() => CustomTextFormField(
+                      controller: registerController.passwordController,
                       labelText: 'كلمة المرور',
-                      validator: _validatePassword,
-                      obscureText: _obscurePassword,
-                      suffixIcon: _obscurePassword
+                      validator: registerController.validatePassword,
+                      obscureText: registerController.obscurePassword.value,
+                      suffixIcon: registerController.obscurePassword.value
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      onSuffixIconPressed: _togglePasswordVisibility,
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
+                      onSuffixIconPressed: registerController.togglePasswordVisibility,
+                    )),
+                    const SizedBox(height: 30),
                     CustomButton(
                       text: 'اشتراك',
-                      fun: _submitForm,
+                      fun: () {
+                        registerController.submitForm(formKey, context);
+                      },
                       color: const Color(0xff16B625),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                     const Text(
                       'او اشترك مع',
                       style: TextStyle(fontSize: 32),
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 10),
                     const Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CustomContainer(
-                            icon: Icons.add_circle_outline,
-                            text: 'Google',
-                            color: Colors.red),
-                        SizedBox(
-                          width: 15,
+                          icon: Icons.add_circle_outline,
+                          text: 'Google',
+                          color: Colors.red,
                         ),
+                        SizedBox(width: 15),
                         CustomContainer(
-                            icon: Icons.add_circle_outline,
-                            text: 'Facebook',
-                            color: Colors.blue),
+                          icon: Icons.add_circle_outline,
+                          text: 'Facebook',
+                          color: Colors.blue,
+                        ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 40,
-                    ),
+                    const SizedBox(height: 40),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

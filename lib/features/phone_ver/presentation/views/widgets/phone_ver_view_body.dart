@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 import 'package:task1/features/code_screen/presentation/views/code_screen_view.dart';
 
 import '../../../../../utils/custom button.dart';
@@ -14,9 +15,20 @@ class PhoneVerViewBody extends StatefulWidget {
 
 class _PhoneVerViewBodyState extends State<PhoneVerViewBody> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _phoneController = TextEditingController();
+
+  String? validatePhone(PhoneNumber? phoneNumber) {
+    if (phoneNumber == null || phoneNumber.completeNumber.isEmpty) {
+      return 'رقم الهاتف مطلوب';
+    }
+    if (!RegExp(r'^\d+$').hasMatch(phoneNumber.completeNumber)) {
+      return 'يرجى إدخال رقم هاتف صالح';
+    }
+    return null;
+  }
 
   void _validateAndProceed() {
-    if (_formKey.currentState?.validate() ?? false ) {
+    if (_formKey.currentState?.validate() ?? false) {
       // If the form is valid, navigate to the next screen
       Navigator.push(
         context,
@@ -25,10 +37,11 @@ class _PhoneVerViewBodyState extends State<PhoneVerViewBody> {
     } else {
       // Show an error message if the form is not valid
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid phone number')),
+        const SnackBar(content: Text('يرجى إدخال رقم هاتف صالح')),
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -45,8 +58,7 @@ class _PhoneVerViewBodyState extends State<PhoneVerViewBody> {
                   children: [
                     Text(
                       'لقد ارسلنا لك رسالة نصية قصيرة تحتوى على رمز الى رقم',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     Text(
                       '010111111111',
@@ -54,30 +66,23 @@ class _PhoneVerViewBodyState extends State<PhoneVerViewBody> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 100,
-              ),
+              const SizedBox(height: 100),
               IntlPhoneField(
+                controller: _phoneController,
                 decoration: InputDecoration(
-                  labelText: 'Phone Number',
+                  labelText: 'رقم الهاتف',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   isDense: true,
                   contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                 ),
-                initialCountryCode: 'US',
+                initialCountryCode: 'EG',
                 inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                  FilteringTextInputFormatter.digitsOnly,
                 ],
-                validator: (phoneNumber) {
-                  if (phoneNumber == null || phoneNumber.completeNumber.isEmpty) {
-                    return 'Phone number is required';
-                  }
-                  if (!RegExp(r'^\d+$').hasMatch(phoneNumber.completeNumber)) {
-                    return 'Please enter a valid phone number';
-                  }
-                  return null;
+                validator: (phone) {
+                  return validatePhone(phone);
                 },
                 onChanged: (phone) {
                   print(phone.completeNumber);

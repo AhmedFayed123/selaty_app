@@ -9,7 +9,7 @@ class WelcomeScreen extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(),
-        body: const WelcomeScreenBody(),
+        body: WelcomeScreenBody(),
       ),
     );
   }

@@ -1,70 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:task1/features/home_screen/presentation/home_view.dart';
+import 'package:get/get.dart';
 import 'package:task1/features/phone_ver/presentation/views/phone_ver_view.dart';
 import '../../../../../utils/custom button.dart';
 import '../../../../../utils/custom_text_form_field.dart';
-import '../login.dart';
+import '../../controller/login_controller.dart';
 
-class LoginBody extends StatefulWidget {
-  const LoginBody({super.key});
+class LoginBody extends StatelessWidget {
+  LoginBody({super.key});
 
-  @override
-  State<LoginBody> createState() => _LoginBodyState();
-}
-
-class _LoginBodyState extends State<LoginBody> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _obscurePassword = true;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'ادخل البريد الالكترونى';
-    }
-    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-    if (!emailRegex.hasMatch(value)) {
-      return 'ادخل البريد الالكترونى بشكل صحيح';
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'ادخل كلمة المرور';
-    }
-    if (value.length < 6) {
-      return 'يجب انا تحتوى كلمة المرور على 6 احرف';
-    }
-    return null;
-  }
-
-  void _togglePasswordVisibility() {
-    setState(() {
-      _obscurePassword = !_obscurePassword;
-    });
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState?.validate() == true) {
-      // Perform login logic
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login Successful')),
-      );
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const HomeView(),
-        ),
-      );
-    }
-  }
+  final loginController = Get.put(LoginController()); // Initialize the controller
 
   @override
   Widget build(BuildContext context) {
@@ -110,33 +55,29 @@ class _LoginBodyState extends State<LoginBody> {
               child: Column(
                 children: [
                   CustomTextFormField(
-                    controller: _emailController,
+                    controller: loginController.emailController,
                     labelText: 'البريد الالكترونى',
-                    validator: _validateEmail,
+                    validator: loginController.validateEmail,
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 20),
-                  CustomTextFormField(
-                    controller: _passwordController,
+                  Obx(() => CustomTextFormField(
+                    controller: loginController.passwordController,
                     labelText: 'كلمة المرور',
-                    validator: _validatePassword,
-                    obscureText: _obscurePassword,
-                    suffixIcon: _obscurePassword
+                    validator: loginController.validatePassword,
+                    obscureText: loginController.obscurePassword.value,
+                    suffixIcon: loginController.obscurePassword.value
                         ? Icons.visibility
                         : Icons.visibility_off,
-                    onSuffixIconPressed: _togglePasswordVisibility,
-                  ),
+                    onSuffixIconPressed: loginController.togglePasswordVisibility,
+                  )),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const PhoneVerView(),
-                            ),
-                          );
+                          Get.to(() => const PhoneVerView());
                         },
                         child: const Text(
                           'هل نسيت كلمة المرور',
@@ -149,7 +90,9 @@ class _LoginBodyState extends State<LoginBody> {
                   const SizedBox(height: 20),
                   CustomButton(
                     text: 'تسجيل الدخول',
-                    fun: _submitForm,
+                    fun: () {
+                      loginController.submitForm(_formKey, context);
+                    },
                     color: const Color(0xff16B625),
                   ),
                 ],
@@ -165,8 +108,7 @@ class _LoginBodyState extends State<LoginBody> {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const Login()));
+                        Get.to(() => LoginBody());
                       },
                       child: const Text(
                         'تسجيل الدخول',
@@ -181,8 +123,7 @@ class _LoginBodyState extends State<LoginBody> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const Login()));
+                    Get.to(() => LoginBody());
                   },
                   child: const Text(
                     'لديك حساب بالفعل؟',
