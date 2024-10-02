@@ -1,23 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../controller/home_controller.dart';
 
 class SalesList extends StatelessWidget {
-  const SalesList({super.key});
+  SalesList({super.key});
+
+  final CategoryListController controller = Get.put(CategoryListController()); // جلب البيانات باستخدام GetX
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 110,
-      child: ListView.builder(
-        itemCount: 11,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) => const ListItem(),
-      ),
-    );
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator()); // عرض مؤشر تحميل
+      }
+
+      if (controller.categories.isEmpty) {
+        return const Center(child: Text('لا توجد فئات متاحة.'));
+      }
+
+      return SizedBox(
+        height: 110,
+        child: ListView.builder(
+          itemCount: controller.categories.length,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            var category = controller.categories[index]; // الحصول على الفئة الحالية
+            return ListItem(
+              categoryName: category.name,
+              imageUrl: 'https://master-market.masool.net/uploads/${category.img}', // صورة الفئة
+            );
+          },
+        ),
+      );
+    });
   }
 }
 
 class ListItem extends StatelessWidget {
-  const ListItem({super.key});
+  final String categoryName;
+  final String imageUrl;
+
+  const ListItem({
+    required this.categoryName,
+    required this.imageUrl,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +62,11 @@ class ListItem extends StatelessWidget {
                   padding: const EdgeInsets.all(5),
                   width: 75,
                   color: Colors.white,
-                  child: const Align(
+                  child: Align(
                     alignment: Alignment.topCenter,
                     child: Text(
-                      'خضروات',
-                      style: TextStyle(
+                      categoryName, // عرض اسم الفئة
+                      style: const TextStyle(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -52,8 +80,13 @@ class ListItem extends StatelessWidget {
                     bottomLeft: Radius.circular(10),
                     bottomRight: Radius.circular(10),
                   ),
-                  child: Image.asset(
-                    'assets/images/fruits_img.jpg',
+                  child: Image.network(
+                    imageUrl, // عرض صورة الفئة من URL
+                    fit: BoxFit.cover,
+                    width: 80,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset('assets/images/fruits_img.jpg'); // صورة بديلة في حالة الخطأ
+                    },
                   ),
                 ),
               ),
@@ -61,22 +94,24 @@ class ListItem extends StatelessWidget {
           ),
           Container(
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white,
-                  width: 2,
-                )
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white,
+                width: 2,
+              ),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Container(
                 color: Colors.orange,
-                child: Image.asset(
-                  'assets/images/category_icon.png',
-                  color: Colors.white,
+                child: Image.network(
+                  imageUrl, // عرض صورة الفئة من URL
+                  fit: BoxFit.cover,
                   width: 35,
                   height: 35,
-                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset('assets/images/fruits_img.jpg'); // صورة بديلة في حالة الخطأ
+                  },
                 ),
               ),
             ),

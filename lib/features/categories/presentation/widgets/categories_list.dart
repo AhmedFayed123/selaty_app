@@ -1,36 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:task1/features/categories/presentation/category_details.dart';
+import 'package:get/get.dart';
+import '../category_details.dart';
+import '../controller/category_controller.dart';
 
 class CategoriesList extends StatelessWidget {
-  const CategoriesList({super.key});
+  CategoriesList({super.key});
+
+  final CategoryController controller = Get.put(CategoryController());
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 0,
-        crossAxisSpacing: 15,
-        childAspectRatio: 2 / 3,
-      ),
-      scrollDirection: Axis.vertical,
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) => const ListItem(),
-    );
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (controller.categories.isEmpty) {
+        return const Center(child: Text('لا توجد فئات متاحة.'));
+      }
+
+      return GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 18,
+          crossAxisSpacing: 15,
+          childAspectRatio: 2 / 3,
+        ),
+        scrollDirection: Axis.vertical,
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: controller.categories.length,
+        itemBuilder: (BuildContext context, int index) {
+          var category = controller.categories[index];
+          return ListItem(
+            categoryName: category.name,
+            imageUrl: 'https://master-market.masool.net/uploads/${category.img}',
+            categoryId: category.id, // تمرير الـ ID هنا
+          );
+        },
+      );
+    });
   }
 }
 
-
 class ListItem extends StatelessWidget {
-  const ListItem({super.key});
+  final String categoryName;
+  final String imageUrl;
+  final int categoryId; // إضافة الـ ID هنا
+
+  const ListItem({
+    required this.categoryName,
+    required this.imageUrl,
+    required this.categoryId, // إضافة الـ ID هنا
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) =>const CategoryDetails(),),);
+        // تمرير الـ ID عند الانتقال إلى شاشة التفاصيل
+        Get.to(() => CategoryDetails(categoryId: categoryId,));
       },
       child: Stack(
         alignment: Alignment.center,
@@ -42,13 +72,13 @@ class ListItem extends StatelessWidget {
                 color: Colors.white,
                 width: 300,
                 height: 110,
-                child: const Align(
+                child: Align(
                   alignment: Alignment.topCenter,
                   child: Text(
-                    'خضروات',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20
+                    categoryName,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20
                     ),
                   ),
                 ),
@@ -58,9 +88,14 @@ class ListItem extends StatelessWidget {
                   bottomLeft: Radius.circular(10),
                   bottomRight: Radius.circular(10),
                 ),
-                child: Image.asset(
-                  'assets/images/fruits_img.jpg',
-                  width: 300,
+                child: Image.network(
+                  imageUrl,
+                  width: 200,
+                  height: 120,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset('assets/images/fruits_img.jpg');
+                  },
                 ),
               ),
             ],
@@ -69,22 +104,24 @@ class ListItem extends StatelessWidget {
             top: 80,
             child: Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(35),
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
-                  )
+                borderRadius: BorderRadius.circular(35),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                ),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(35),
-                child:Container(
+                child: Container(
                   color: Colors.orange,
-                  child: Image.asset(
-                    'assets/images/category_icon.png',
-                    color: Colors.white,
+                  child: Image.network(
+                    imageUrl,
                     width: 60,
                     height: 60,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset('assets/images/fruits_img.jpg');
+                    },
                   ),
                 ),
               ),

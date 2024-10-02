@@ -3,13 +3,14 @@ import 'package:task1/features/categories/presentation/widgets/category_details_
 import 'package:task1/utils/custom_bottom_nav_bar.dart';
 
 class CategoryDetails extends StatelessWidget {
-  const CategoryDetails({super.key});
+  const CategoryDetails({super.key, required this.categoryId});
+  final int categoryId; // تأكد من تمرير معرف الفئة المطلوبة
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: CategoryDetailsBody(),
-      bottomNavigationBar: CustomBottomNavBar(),
+    return Scaffold(
+      body: CategoryDetailsBody(categoryId: categoryId,),
+      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 }

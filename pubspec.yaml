@@ -33,6 +33,9 @@ dependencies:
 
   introduction_screen: ^3.1.14
   intl_phone_field: ^3.2.0
+  http: ^1.2.2
+  image_picker: ^1.1.2
+  shared_preferences: ^2.3.2
 
   another_stepper: ^1.2.2
   get: ^4.6.6

@@ -88,7 +88,7 @@ class HomeBody extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            const TheBestList(),
+            AdvertisementList(),
             const SizedBox(
               height: 10,
             ),
@@ -114,7 +114,7 @@ class HomeBody extends StatelessWidget {
                 ),
               ],
             ),
-            const SalesList(),
+            SalesList(),
             const SizedBox(
               height: 10,
             ),

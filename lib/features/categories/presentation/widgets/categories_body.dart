@@ -9,12 +9,12 @@ class CategoriesBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
+    return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 60, horizontal: 40),
+        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
         child: Column(
           children: [
-            CustomAppBar(
+            const CustomAppBar(
               text: 'التصنيفات',
             ),
             SizedBox(

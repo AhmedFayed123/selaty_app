@@ -1,43 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../shopping_cart/presentation/shopping_cart_screen/shopping_cart_screen.dart';
+import '../controller/category_controller.dart';
 
 class CategoryDetailsList extends StatelessWidget {
-  const CategoryDetailsList({super.key});
+  const CategoryDetailsList({super.key, required this.categoryId});
+  final int categoryId; // تأكد من تمرير معرف الفئة المطلوبة
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 500,
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 20,
-          crossAxisSpacing: 20,
-          childAspectRatio: 3 / 5,
-        ),
-        scrollDirection: Axis.vertical,
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: 10,
-        itemBuilder: (BuildContext context, int index) => const ListItem(),
-      ),
-    );
+    final CategoryDetailsController controller = Get.put(CategoryDetailsController());
+    controller.setCategoryId(categoryId); // تعيين معرف الفئة هنا
+
+    return Obx(() {
+      // التأكد من أن البيانات محملة
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (controller.categoryDetails.isEmpty) {
+        return const Center(child: Text('لا توجد تفاصيل'));
+      } else {
+        return SizedBox(
+          width: 500,
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+              childAspectRatio: 3 / 6,
+            ),
+            scrollDirection: Axis.vertical,
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: controller.categoryDetails.length, // عدد العناصر بناءً على طول القائمة
+            itemBuilder: (BuildContext context, int index) {
+              return ListItem(categoryId: categoryId, index: index);
+            },
+          ),
+        );
+      }
+    });
   }
 }
 
 class ListItem extends StatelessWidget {
-  const ListItem({super.key});
+  const ListItem({super.key, required this.categoryId, required this.index});
+  final int categoryId; // تأكد من تمرير معرف الفئة المطلوبة
+  final int index; // تمرير الـ index
 
   @override
   Widget build(BuildContext context) {
+    final CategoryDetailsController controller = Get.put(CategoryDetailsController());
+
+    final subCategory = controller.categoryDetails[index]; // استخدم الفئة الفرعية بناءً على الـ index
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const ShoppingCartScreen()),
         );
       },
-      child: Card.filled(
+      child: Card(
         color: Colors.white,
         elevation: 5,
         shape: RoundedRectangleBorder(
@@ -47,11 +70,8 @@ class ListItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              flex: 2,
               child: Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 8,
-                ),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -84,11 +104,11 @@ class ListItem extends StatelessWidget {
             ),
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              child: Image.asset(
-                'assets/images/fruits.png',
+              child: Image.network(
+                'https://master-market.masool.net/uploads/${subCategory.img}',
                 fit: BoxFit.fill,
-                cacheWidth: 250,
-                cacheHeight: 200, // Replace with your image URL
+                width: 250,
+                height: 200,
               ),
             ),
             Padding(
@@ -105,30 +125,26 @@ class ListItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         color: Colors.green,
                       ),
-                      child: const Align(
+                      child: Align(
                         alignment: Alignment.centerRight,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 6.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
                           child: Text(
-                            'خضروات',
-                            style: TextStyle(color: Colors.white),
+                            subCategory.name,
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 2,
+                    const SizedBox(height: 2),
+                    Text(
+                      subCategory.details,
+                      style: const TextStyle(fontSize: 15),
                     ),
-                    const Text(
-                      'خضروات',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    const SizedBox(
-                      height: 2,
-                    ),
-                    const Text(
-                      '1kg',
-                      style: TextStyle(
+                    const SizedBox(height: 2),
+                    Text(
+                      '${subCategory.ord}',
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
@@ -137,64 +153,6 @@ class ListItem extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFECEFF2),
-                      borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(10),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: const Offset(
-                              0, 3), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(left: 16.0, bottom: 4.0),
-                        child: Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: const Icon(
-                              Icons.archive_outlined,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(right: 6.0),
-                        child: Text(
-                          '40 SAR',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            )
           ],
         ),
       ),

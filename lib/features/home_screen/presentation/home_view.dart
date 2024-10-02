@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:task1/features/home_screen/presentation/widgets/home_body.dart';
 
-import '../../profile/presentation/profile.dart';
+import '../../profile/presentation/view/profile.dart';
+
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});

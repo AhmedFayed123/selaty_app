@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task1/features/login/presentation/views/login.dart';
 import '../../../../../utils/custom button.dart';
-import '../../../../../utils/custom container.dart';
 import '../../../../../utils/custom_text_form_field.dart';
 import '../../controller/register_controller.dart';
-
 
 class RegisterBody extends StatelessWidget {
   const RegisterBody({super.key});
@@ -39,7 +37,9 @@ class RegisterBody extends StatelessWidget {
             ),
             child: IconButton(
               icon: const Icon(Icons.add_a_photo_outlined),
-              onPressed: () {},
+              onPressed: () {
+                // Add function for picking an image
+              },
             ),
           ),
         ],
@@ -74,6 +74,12 @@ class RegisterBody extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     CustomTextFormField(
+                      controller: registerController.mobileController,
+                      labelText: 'رقم الهاتف',
+                      validator: registerController.validateMobile,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextFormField(
                       controller: registerController.emailController,
                       labelText: 'البريد الالكترونى',
                       validator: registerController.validateEmail,
@@ -85,78 +91,29 @@ class RegisterBody extends StatelessWidget {
                       labelText: 'كلمة المرور',
                       validator: registerController.validatePassword,
                       obscureText: registerController.obscurePassword.value,
-                      suffixIcon: registerController.obscurePassword.value
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      suffixIcon:
+                          registerController.obscurePassword.value
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                       onSuffixIconPressed: registerController.togglePasswordVisibility,
+
+                    ),
+                      ),
+
+                    const SizedBox(height: 10),
+                    Obx(() => CustomTextFormField(
+                      controller: registerController.confirmPasswordController,
+                      labelText: 'تأكيد كلمة المرور',
+                      validator: registerController.validateConfirmPassword,
+                      obscureText: registerController.obscurePassword.value,
                     )),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 40),
                     CustomButton(
-                      text: 'اشتراك',
                       fun: () {
                         registerController.submitForm(formKey, context);
+                        Get.to(const Login());
                       },
-                      color: const Color(0xff16B625),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'او اشترك مع',
-                      style: TextStyle(fontSize: 32),
-                    ),
-                    const SizedBox(height: 10),
-                    const Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CustomContainer(
-                          icon: Icons.add_circle_outline,
-                          text: 'Google',
-                          color: Colors.red,
-                        ),
-                        SizedBox(width: 15),
-                        CustomContainer(
-                          icon: Icons.add_circle_outline,
-                          text: 'Facebook',
-                          color: Colors.blue,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const Login()));
-                              },
-                              child: const Text(
-                                'تسجيل الدخول',
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.black),
-                              ),
-                            ),
-                            const Icon(Icons.arrow_right),
-                          ],
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const Login()));
-                          },
-                          child: const Text(
-                            'لديك حساب بالفعل؟',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black),
-                          ),
-                        ),
-                      ],
+                      text: 'تسجيل', color: Colors.green,
                     ),
                   ],
                 ),

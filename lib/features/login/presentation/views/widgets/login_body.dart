@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task1/features/change_password/presentation/change_password_view.dart';
 import 'package:task1/features/phone_ver/presentation/views/phone_ver_view.dart';
+import 'package:task1/features/register/presentation/views/register.dart';
 import '../../../../../utils/custom button.dart';
 import '../../../../../utils/custom_text_form_field.dart';
 import '../../controller/login_controller.dart';
+import '../login.dart';
 
 class LoginBody extends StatelessWidget {
   LoginBody({super.key});
@@ -108,10 +111,10 @@ class LoginBody extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Get.to(() => LoginBody());
+                        Get.to(() => const ChangePasswordView());
                       },
                       child: const Text(
-                        'تسجيل الدخول',
+                        'تغيير كلمةالمرور',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -123,10 +126,10 @@ class LoginBody extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    Get.to(() => LoginBody());
+                    Get.to(() => const Register());
                   },
                   child: const Text(
-                    'لديك حساب بالفعل؟',
+                    'تسجيل؟',
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,

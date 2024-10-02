@@ -5,7 +5,8 @@ import 'package:task1/features/categories/presentation/widgets/category_details_
 import '../../../home_screen/presentation/widgets/search_bar.dart';
 
 class CategoryDetailsBody extends StatelessWidget {
-  const CategoryDetailsBody({super.key});
+  const CategoryDetailsBody({super.key, required this.categoryId});
+  final int categoryId; // تأكد من تمرير معرف الفئة المطلوبة
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +43,13 @@ class CategoryDetailsBody extends StatelessWidget {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: CategoryDetailsList(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: CategoryDetailsList(categoryId: categoryId,),
               )
             ],
           ),
-          Container(
+          SizedBox(
             height: 400,
             child: Center(
               child: Container(
