@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task1/features/login/presentation/views/login.dart';
 import '../../../../../utils/custom button.dart';
 import '../../../../../utils/custom_text_form_field.dart';
 import '../../controller/register_controller.dart';
@@ -111,7 +110,6 @@ class RegisterBody extends StatelessWidget {
                     CustomButton(
                       fun: () {
                         registerController.submitForm(formKey, context);
-                        Get.to(const Login());
                       },
                       text: 'تسجيل', color: Colors.green,
                     ),

@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../features/categories/model/category_model.dart';
+import '../features/favorite/model/favorite_model.dart';
 import '../features/home_screen/model/model.dart';
 import '../features/login/models/login_model.dart';
+import '../features/products/models/product_model.dart';
 import '../features/profile/models/profile_model.dart';
 import '../features/register/presentation/models/register_model.dart';
 
@@ -161,6 +164,91 @@ class CategoryDetailsService {
       }
     } catch (e) {
       throw Exception('An error occurred: $e');
+    }
+  }
+}
+class ProductService {
+  static const String baseUrl = "https://master-market.masool.net/api/products/t/ar/0/0/0";
+
+  Future<List<Product>> fetchProducts() async {
+    final response = await http.get(Uri.parse(baseUrl));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['data']['data'];
+      List<Product> products = data.map((json) => Product.fromJson(json)).toList();
+
+      // Load favorite status from SharedPreferences
+      for (var product in products) {
+        product.isFavorite.value = await Product.loadFavoriteStatus(product.id);
+      }
+
+      return products;
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
+
+  Future<void> toggleFavorite(BuildContext context, Product product) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String token = prefs.getString('token') ?? '';
+
+    const String url = 'https://master-market.masool.net/api/user_favorite';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'favo_id': product.id}),
+      );
+
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+        if (result['result']) {
+          // Toggle the isFavorite value
+          product.isFavorite.value = !product.isFavorite.value;
+
+          // Save the new favorite status
+          await product.saveFavoriteStatus();
+
+
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(result['error_mesage_en'] ?? 'حدث خطأ أثناء التبديل')),
+          );
+        }
+      }
+    } catch (e) {
+      print("Error toggling favorite: $e");
+    }
+  }
+}
+class FavoriteService {
+  static const String baseUrl = 'https://master-market.masool.net/api';
+
+  // جلب المفضلة
+  Future<List<FavoriteProduct>> fetchFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String token = prefs.getString('token') ?? ''; // الحصول على التوكن
+
+    final url = Uri.parse('$baseUrl/user_favorite/t/ar');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['data'];
+      return data.map((json) => FavoriteProduct.fromJson(json)).toList();
+    } else if (response.statusCode == 401) {
+      throw Exception('Unauthenticated');
+    } else {
+      throw Exception('Failed to load favorites');
     }
   }
 }

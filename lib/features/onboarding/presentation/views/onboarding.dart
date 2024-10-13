@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
 import 'package:task1/features/welcome/presentation/views/welcome_screen.dart';
 
 class OnBoarding extends StatefulWidget {
@@ -13,6 +14,35 @@ class OnBoarding extends StatefulWidget {
 class _OnBoardingState extends State<OnBoarding> {
   final introKey = GlobalKey<IntroductionScreenState>();
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+  }
+
+  Future<void> _checkOnboardingStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? hasCompletedOnboarding = prefs.getBool('onboarding_completed');
+
+    // If the user has completed onboarding, navigate directly to the welcome screen
+    if (hasCompletedOnboarding ?? false) {
+      _navigateToWelcomeScreen();
+    }
+  }
+
+  void _onIntroEnd(context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_completed', true); // Save completion flag
+
+    _navigateToWelcomeScreen();
+  }
+
+  void _navigateToWelcomeScreen() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+    );
+  }
 
   void _onPageChanged(int page) {
     setState(() {
@@ -36,14 +66,8 @@ class _OnBoardingState extends State<OnBoarding> {
     return Colors.grey;
   }
 
-  void _onIntroEnd(context) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-    );
-  }
-
   Widget _buildImage(String assetName, Color color1, Color color2, Color color3,
-          [int width = 80]) =>
+      [int width = 80]) =>
       Stack(
         alignment: Alignment.center,
         children: [
@@ -85,6 +109,7 @@ class _OnBoardingState extends State<OnBoarding> {
       bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       imagePadding: EdgeInsets.zero,
     );
+
     return Scaffold(
       body: SafeArea(
         child: IntroductionScreen(
@@ -93,35 +118,10 @@ class _OnBoardingState extends State<OnBoarding> {
           allowImplicitScrolling: true,
           autoScrollDuration: 3000,
           infiniteAutoScroll: true,
-          globalHeader: const Align(
-            alignment: Alignment.topRight,
-            child: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.only(top: 16, right: 16),
-              ),
-            ),
-          ),
           pages: [
             PageViewModel(
-              titleWidget: Container(
-                padding: const EdgeInsets.only(right: 12),
-                alignment: Alignment.centerRight,
-                child: const Text(
-                  "البحث بالقرب منك",
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              bodyWidget: Container(
-                alignment: Alignment.centerRight,
-                child: const Text(
-                  "ابخث عن المتاجر المفضلة التى تريده بموقعك او حيك",
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
+              titleWidget: _buildTitle("البحث بالقرب منك", Colors.red),
+              bodyWidget: _buildBody("ابخث عن المتاجر المفضلة التى تريده بموقعك او حيك"),
               image: _buildImage(
                 'assets/images/shop.png',
                 const Color(0xffB91B2E),
@@ -129,32 +129,11 @@ class _OnBoardingState extends State<OnBoarding> {
                 const Color(0xffEADADC),
               ),
               decoration: pageDecoration.copyWith(
-                  boxDecoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/background.jpg'),
-                ),
-              )),
+                  boxDecoration: _buildPageDecoration('assets/images/background.jpg')),
             ),
             PageViewModel(
-              titleWidget: Container(
-                padding: const EdgeInsets.only(right: 12),
-                alignment: Alignment.centerRight,
-                child: const Text(
-                  "عروض طازجة وجودة",
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              bodyWidget: Container(
-                alignment: Alignment.centerRight,
-                child: const Text(
-                  "جميع العناصر لها نضارة حقيقية وهى مخصص لاحتياجاتك",
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
+              titleWidget: _buildTitle("عروض طازجة وجودة", Colors.green),
+              bodyWidget: _buildBody("جميع العناصر لها نضارة حقيقية وهى مخصص لاحتياجاتك"),
               image: _buildImage(
                 'assets/images/shop.png',
                 const Color(0xff16B625),
@@ -167,32 +146,11 @@ class _OnBoardingState extends State<OnBoarding> {
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
                   ),
-                  boxDecoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/background.jpg'),
-                    ),
-                  )),
+                  boxDecoration: _buildPageDecoration('assets/images/background.jpg')),
             ),
             PageViewModel(
-              titleWidget: Container(
-                padding: const EdgeInsets.only(right: 12),
-                alignment: Alignment.centerRight,
-                child: const Text(
-                  "تسليم سريع للمنزل",
-                  style: TextStyle(
-                    color: Color(0xff8A08DE),
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              bodyWidget: Container(
-                alignment: Alignment.centerRight,
-                child: const Text(
-                  "جميع العناصر لها نضارة حقيقية وهى مخصص لاحتياجاتك",
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
+              titleWidget: _buildTitle("تسليم سريع للمنزل", const Color(0xff8A08DE)),
+              bodyWidget: _buildBody("جميع العناصر لها نضارة حقيقية وهى مخصص لاحتياجاتك"),
               image: _buildImage(
                 'assets/images/delivery.png',
                 const Color(0xff8A08DE),
@@ -205,41 +163,16 @@ class _OnBoardingState extends State<OnBoarding> {
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
                   ),
-                  boxDecoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/background.jpg'),
-                    ),
-                  )),
+                  boxDecoration: _buildPageDecoration('assets/images/background.jpg')),
             ),
           ],
           onDone: () => _onIntroEnd(context),
-          // You can override onSkip callback
           showSkipButton: false,
           skipOrBackFlex: 0,
           nextFlex: 0,
           showBackButton: false,
-          //rtl: true, // Display as right-to-left
           next: const Icon(Icons.arrow_forward),
-          done: Container(
-            width: 60,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xff8A08DE),
-              borderRadius: BorderRadius.circular(8)
-
-            ),
-            child: const Align(
-              alignment: Alignment.center,
-              child: Text(
-                '>',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white
-                ),
-              ),
-            ),
-          ),
+          done: _buildDoneButton(),
           curve: Curves.fastLinearToSlowEaseIn,
           controlsMargin: const EdgeInsets.all(16),
           controlsPadding: kIsWeb
@@ -249,19 +182,73 @@ class _OnBoardingState extends State<OnBoarding> {
             size: const Size(10.0, 10.0),
             color: const Color(0xFFBDBDBD),
             activeColor: _getDotColor(_currentPage),
-            // Active dot color
             activeSize: const Size(22.0, 10.0),
             activeShape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(25.0)),
             ),
           ),
-
           nextStyle: ButtonStyle(
-            iconColor: MaterialStateProperty.all<Color>(Colors.white),
+            iconColor: WidgetStateProperty.all<Color>(Colors.white),
             backgroundColor:
-                MaterialStateProperty.all<Color>(_getDotColor(_currentPage)),
+            WidgetStateProperty.all<Color>(_getDotColor(_currentPage)),
           ),
           onChange: _onPageChanged,
+        ),
+      ),
+    );
+  }
+
+  // Helper widgets for cleaner code
+  Widget _buildTitle(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.only(right: 12),
+      alignment: Alignment.centerRight,
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontSize: 28,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(String text) {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: Text(
+        text,
+        style: const TextStyle(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+
+  BoxDecoration _buildPageDecoration(String imagePath) {
+    return BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage(imagePath),
+      ),
+    );
+  }
+
+  Widget _buildDoneButton() {
+    return Container(
+      width: 60,
+      height: 40,
+      decoration: BoxDecoration(
+        color: const Color(0xff8A08DE),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Align(
+        alignment: Alignment.center,
+        child: Text(
+          '>',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
         ),
       ),
     );

@@ -11,6 +11,7 @@ import 'features/notification_screen.dart';
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async{
+
   WidgetsFlutterBinding.ensureInitialized();
   OneSignal.shared.setAppId('fe3a5785-0220-46af-a193-9244bf484dad');
 

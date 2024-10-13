@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../services/auth_service.dart';
+import '../../../login/presentation/views/login.dart';
 import '../models/register_model.dart';
 
 
@@ -73,9 +74,12 @@ class RegisterController extends GetxController {
     obscurePassword.value = !obscurePassword.value;
   }
 
-  // تعديل الدالة لتستدعي RegisterApiService بشكل صحيح
   Future<void> submitForm(GlobalKey<FormState> formKey, BuildContext context) async {
     if (formKey.currentState?.validate() == true) {
+      if (passwordController.text != confirmPasswordController.text) {
+        Get.snackbar('خطأ', 'كلمات المرور غير متطابقة');
+        return; // إيقاف التنفيذ إذا كانت كلمات المرور غير متطابقة
+      }
       isLoading(true);
       try {
         // إنشاء نموذج التسجيل
@@ -91,8 +95,10 @@ class RegisterController extends GetxController {
 
         // استدعاء API للتسجيل
         final response = await RegisterApiService().registerUser(registerModel);
-        // هنا تستطيع معالجة الاستجابة
+
+        // إذا تم التسجيل بنجاح، الانتقال إلى صفحة تسجيل الدخول
         Get.snackbar('نجاح', 'تم التسجيل بنجاح');
+        Get.to(() => const Login()); // التنقل إلى صفحة تسجيل الدخول بعد النجاح
       } catch (error) {
         Get.snackbar('خطأ', 'فشل التسجيل: ${error.toString()}');
       } finally {
