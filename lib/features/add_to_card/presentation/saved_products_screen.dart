@@ -15,9 +15,6 @@ class _SavedProductsScreenState extends State<SavedProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Saved Products'),
-      ),
       body: FutureBuilder<List<Product>>(
         future: ProductDB().getProducts(),
         builder: (context, snapshot) {

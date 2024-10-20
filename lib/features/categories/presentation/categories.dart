@@ -9,7 +9,6 @@ class Categories extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: CategoriesBody(),
-      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 }

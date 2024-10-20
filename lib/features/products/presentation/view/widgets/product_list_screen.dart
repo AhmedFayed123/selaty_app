@@ -12,9 +12,6 @@ class ProductListScreen extends StatelessWidget {
     final ProductController productController = Get.put(ProductController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Products'),
-      ),
       body: Obx(() {
         if (productController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());

@@ -11,11 +11,10 @@ class FavoriteController extends GetxController {
   final FavoriteService favoriteService = FavoriteService();
 
   @override
-  void onInit() {
+  void onReady() {
     fetchFavorites();
-    super.onInit();
+    super.onReady();
   }
-
   void fetchFavorites() async {
     try {
       isLoading(true);

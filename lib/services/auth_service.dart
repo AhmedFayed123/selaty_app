@@ -35,13 +35,11 @@ class LoginApiService {
 class RegisterApiService {
   final String baseUrl = 'https://master-market.masool.net/api';
 
-  // دالة إرسال طلب التسجيل
   Future<Map<String, dynamic>> registerUser(RegisterModel registerModel) async {
     final url = Uri.parse('$baseUrl/register');
 
     var request = http.MultipartRequest('POST', url);
 
-    // إضافة الحقول المطلوبة
     request.fields['name'] = registerModel.name;
     request.fields['mobile'] = registerModel.mobile;
     request.fields['email'] = registerModel.email;
@@ -49,7 +47,6 @@ class RegisterApiService {
     request.fields['c_password'] = registerModel.confirmPassword;
     request.fields['onesignal_id'] = registerModel.onesignalId;
 
-    // إضافة الملف (الصورة) إذا كانت موجودة
     if (registerModel.profilePhotoPath.isNotEmpty) {
       request.files.add(
         await http.MultipartFile.fromPath(
@@ -59,12 +56,10 @@ class RegisterApiService {
       );
     }
 
-    // إضافة الهيدرز
     request.headers['Accept'] = 'application/json';
     request.headers['client_id'] = '964ad058-e46a-431c-8dfe-de44e05a2002';
     request.headers['client_secret'] = 'cR8kOgGXbS19cdrZ1tAJYt2qeUXxTIW9oXxLeQS7';
 
-    // إرسال الطلب
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
 
@@ -228,7 +223,6 @@ class ProductService {
 class FavoriteService {
   static const String baseUrl = 'https://master-market.masool.net/api';
 
-  // جلب المفضلة
   Future<List<FavoriteProduct>> fetchFavorites() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? ''; // الحصول على التوكن

@@ -47,4 +47,5 @@ class CategoryListController extends GetxController {
       isLoading(false);
     }
   }
+
 }

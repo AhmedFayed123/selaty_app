@@ -10,7 +10,7 @@ class SplashController extends GetxController {
 
   void navigateToHome() {
     Future.delayed(const Duration(seconds: 3), () {
-      Get.off(() =>  OnBoarding()); // استخدمنا Get بدلاً من Navigator
+      Get.off(() =>  const OnBoarding()); // استخدمنا Get بدلاً من Navigator
     });
   }
 }

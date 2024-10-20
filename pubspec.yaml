@@ -45,6 +45,7 @@ dependencies:
   onesignal_flutter: ^3.2.6
   overlay_support: ^2.0.1
   sqflite: ^2.4.0
+  convex_bottom_bar: ^3.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

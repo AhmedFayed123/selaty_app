@@ -11,9 +11,6 @@ class FavoriteListScreen extends StatelessWidget {
     final FavoriteController favoriteController = Get.put(FavoriteController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Favorites'),
-      ),
       body: Obx(() {
         if (favoriteController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());

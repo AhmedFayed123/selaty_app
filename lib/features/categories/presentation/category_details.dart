@@ -10,7 +10,6 @@ class CategoryDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CategoryDetailsBody(categoryId: categoryId,),
-      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 }

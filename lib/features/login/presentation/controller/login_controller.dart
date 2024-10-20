@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
+import '../../../../services/auth_service.dart';
 import '../../../home_screen/presentation/home_view.dart';
-import '../../models/login_model.dart';
 
 
 class LoginController extends GetxController {
@@ -76,7 +74,7 @@ class LoginController extends GetxController {
         await prefs.setString('token', loginResponse.token ?? '');
 
         // الانتقال إلى الشاشة الرئيسية
-        Get.to(() => const HomeView());
+        Get.to(() => HomeScreen());
       } else {
         // فشل تسجيل الدخول
         Get.snackbar('Error', loginResponse.message);
@@ -93,24 +91,3 @@ class LoginController extends GetxController {
   }
 }
 
-class LoginApiService {
-  static const String baseUrl = 'https://master-market.masool.net/api';
-
-  Future<LoginResponseModel> login(String phoneEmail, String password, String oneSignalId) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'phone_email': phoneEmail,
-        'password': password,
-        'onesignal_id': oneSignalId,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      return LoginResponseModel.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to login');
-    }
-  }
-}
