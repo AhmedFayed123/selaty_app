@@ -9,10 +9,16 @@ import '../../../home_screen/presentation/home_view.dart';
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  var obscurePassword = true.obs; // للتحكم في رؤية كلمة المرور
-  var isLoading = false.obs; // للتحكم في حالة التحميل
+  var obscurePassword = true.obs;
+  var isLoading = false.obs;
 
   final LoginApiService apiService = LoginApiService();
+
+  @override
+  void onInit() {
+    super.onInit();
+    checkLoginStatus();
+  }
 
   @override
   void onClose() {
@@ -20,6 +26,15 @@ class LoginController extends GetxController {
     passwordController.dispose();
     super.onClose();
   }
+
+  Future<void> checkLoginStatus() async {
+    String? token = await getToken();
+    if (token != null && token.isNotEmpty) {
+
+      Get.offAll(() => HomeScreen());
+    }
+  }
+
 
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -84,10 +99,10 @@ class LoginController extends GetxController {
     }
   }
 
-  // جلب الـ token المخزن
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
+
 }
 
